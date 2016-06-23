@@ -35,9 +35,6 @@ public:
 
     int go();
 
-
-    void work(const string &strBuf, CHANGE_TYPE type);
-
     void addUsbHubTunnel(int nSeq, const string &devName);
     bool removeUsbHubTunnel(int nSeq);
     bool getUsbHubTunnelName(int nSeq, string &devName);
@@ -46,7 +43,7 @@ public:
 private:
 
 
-
+    void work(const string &strBuf, CHANGE_TYPE type);
     static void * threadProc(void* self);
 
 
