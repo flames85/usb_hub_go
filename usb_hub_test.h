@@ -31,7 +31,7 @@ public:
     int recv(char *pbuf, int size);
 
 private:
-    
+
     bool updateUsbHubTunnelAttrubute(int speed, int databits, int parity, int stopbits);
 
 
