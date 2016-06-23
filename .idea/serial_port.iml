@@ -6,10 +6,12 @@
       <sourceFolder url="file://$MODULE_DIR$/stty.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/usb_hub_test.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/usb_hub_study.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/usb_hub_monitor.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/usb_hub_study.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/stty.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/usb_hub_test.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/usb_hub_monitor.cpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />

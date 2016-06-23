@@ -23,7 +23,7 @@ UsbHubStudy::~UsbHubStudy()
 
 void UsbHubStudy::go() {
 
-    printf("# init mode\n");
+    printf("# study mode\n");
     printf("请将USB存储设备插拔同一个Hub的不同USB口, 然后退出.\nPS: 不得插拔不同的Hub, 如果你这样做了, 请退出后再试. 总之init模式下, 保证只有需要检测的Hub发生变化.\n\n");
 
     // 读取消息数组
@@ -77,10 +77,10 @@ void UsbHubStudy::work(const string &strBuf)
     }
 
     FILE *fp = NULL;
-    printf("init dev hub prefix is[%s] so far\n", m_strHubPrefix->c_str());
+    printf("# init dev hub prefix is[%s] so far\n", m_strHubPrefix->c_str());
     if( (fp = fopen(DEV_HUB_PREFIX_CONF, "wb") ) == NULL )
     {
-        printf("open conf[%s] fail. 可能权限不足!\n", DEV_HUB_PREFIX_CONF);
+        printf("# open conf[%s] fail. 可能权限不足!\n", DEV_HUB_PREFIX_CONF);
         return;
     }
     fwrite(m_strHubPrefix->c_str(), sizeof(char), m_strHubPrefix->size(), fp);

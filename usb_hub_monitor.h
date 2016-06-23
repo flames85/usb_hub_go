@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include "stty.h"
+#include "common.h"
 
 using namespace std;
 
@@ -16,11 +17,11 @@ enum CHANGE_TYPE
 
 struct UsbHubTunnelInfo
 {
-    TTY_INFO *ptty;
+    __pid_t pid;
     string devName;
     UsbHubTunnelInfo()
     {
-        ptty = NULL;
+        pid = -1;
         devName.clear();
     }
 };
@@ -34,27 +35,25 @@ public:
 
     int go();
 
-    int sendUsbHubTunnel(int nSeq, char *pbuf, int size, int speed, int databits, int parity, int stopbits);
-    int sendUsbHubTunnel(int nSeq, char *pbuf, int size);
-
-    int recvUsbHubTunnel(int nSeq, char *pbuf, int size, int speed, int databits, int parity, int stopbits);
-    int recvUsbHubTunnel(int nSeq, char *pbuf, int size);
 
     void work(const string &strBuf, CHANGE_TYPE type);
 
+    void addUsbHubTunnel(int nSeq, const string &devName);
+    bool removeUsbHubTunnel(int nSeq);
+    bool getUsbHubTunnelName(int nSeq, string &devName);
+    bool setUsbHubTunnelPid(int nSeq, __pid_t pid);
+
 private:
 
-    bool updateUsbHubTunnelAttrubute(UsbHubTunnelInfo *tunnelInfo, int speed, int databits, int parity, int stopbits);
-    void addUsbHubTunnel(int nSeq, UsbHubTunnelInfo *tunnelInfo);
-    bool removeUsbHubTunnel(int nSeq);
+
 
     static void * threadProc(void* self);
-    int str2int( const string &str, int nScale = 10);
+
 
 
 private:
     pthread_mutex_t                m_mutex;
-    map<int, UsbHubTunnelInfo*>    m_usbSeqMap;
+    map<int, UsbHubTunnelInfo>     m_usbSeqMap;
     string 	                      *m_strHubPrefix;
     pthread_t                      m_id;
 };

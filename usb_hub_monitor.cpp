@@ -1,6 +1,8 @@
 #include <sstream>
 #include <string.h>
 #include <sys/socket.h>
+#include <signal.h>
+#include <wait.h>
 #include "usb_hub_monitor.h"
 #include "common.h"
 
@@ -8,7 +10,7 @@
 UsbHubMonitor::UsbHubMonitor():
 		m_strHubPrefix(NULL), m_id(0)
 {
-
+	pthread_mutex_init(&m_mutex, NULL);
 }
 UsbHubMonitor::~UsbHubMonitor()
 {
@@ -33,14 +35,14 @@ void * UsbHubMonitor::threadProc(void* self)
 		// 阻塞读取
 		recv(hotplug_sock, &buf, sizeof(buf), 0);
 #ifdef _DEBUG_
-		printf("debug:recv:%s\n", buf);
+		printf("\t[%d] debug:recv:%s\n", getpid(), buf);
 #endif
 		string strBuf = buf;
 		// 解析出开头是add, remove, 末尾有tty
 		if(0 == strBuf.find("add@") && strBuf.find("tty/") != std::string::npos)
 		{
 #ifdef _DEBUG_
-			printf("debug:add:%s\n", strBuf.c_str());
+			printf("\t[%d] debug:add:%s\n", getpid(), strBuf.c_str());
 #endif
 			strBuf = strBuf.substr(4);
 			_self->work(strBuf, TYPE_ADD);
@@ -48,7 +50,7 @@ void * UsbHubMonitor::threadProc(void* self)
 		else if(0 == strBuf.find("remove@") && strBuf.find("tty/") != std::string::npos)
 		{
 #ifdef _DEBUG_
-			printf("debug:remove:%s\n", strBuf.c_str());
+			printf("\t[%d] debug:remove:%s\n", getpid(), strBuf.c_str());
 #endif
 			strBuf = strBuf.substr(7);
 			_self->work(strBuf, TYPE_REMOVE);
@@ -63,8 +65,8 @@ int UsbHubMonitor::go()
 	FILE *fp = NULL;
 	if( (fp = fopen(DEV_HUB_PREFIX_CONF, "rb") ) == NULL )
 	{
-		printf("open conf[%s] fail, please run init mode first!\n", DEV_HUB_PREFIX_CONF);
-		printf("usage.\n\tusb_hub_monitor init\n\n");
+		printf("# open conf[%s] fail, please run init mode first!\n", DEV_HUB_PREFIX_CONF);
+		printf("# usage.\n\tusb_hub_monitor init\n\n");
 		return -1;
 	}
 
@@ -72,10 +74,10 @@ int UsbHubMonitor::go()
 	memset(cHubPrefix, 0x0, sizeof(cHubPrefix));
 	if(fread(cHubPrefix, sizeof(char), DEV_HUB_PREFIX_SIZE, fp) <=0 )
 	{
-		printf("read conf[%s] fail, please run init mode first!\n", DEV_HUB_PREFIX_CONF);
+		printf("# read conf[%s] fail, please run init mode first!\n", DEV_HUB_PREFIX_CONF);
 		return -2;
 	}
-	printf("get dev hub prefix[%s]\n", cHubPrefix);
+	printf("# get dev hub prefix[%s]\n", cHubPrefix);
 
 	m_strHubPrefix = new string(cHubPrefix);
 
@@ -86,11 +88,55 @@ int UsbHubMonitor::go()
 	return 0;
 }
 
-
-
-void UsbHubMonitor::addUsbHubTunnel(int nSeq, UsbHubTunnelInfo *tunnelInfo)
+bool UsbHubMonitor::setUsbHubTunnelPid(int nSeq, __pid_t pid)
 {
 	pthread_mutex_lock(&m_mutex);
+	bool bSet = true;
+	do{
+		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
+		{
+			printf("\t[%d] usb-seq[%d] not exists\n", getpid(), nSeq);
+			bSet = false;
+			break;
+		}
+		UsbHubTunnelInfo &tunnelInfo = m_usbSeqMap.at(nSeq);
+		if(-1 != tunnelInfo.pid)
+		{
+			kill(tunnelInfo.pid, 9);
+			waitpid(tunnelInfo.pid, NULL, 0);
+		}
+		m_usbSeqMap[nSeq].pid = pid;
+
+	} while(0);
+
+	pthread_mutex_unlock(&m_mutex);
+
+	return bSet;
+}
+bool UsbHubMonitor::getUsbHubTunnelName(int nSeq, string &devName)
+{
+	pthread_mutex_lock(&m_mutex);
+	bool bGet = true;
+	do{
+		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
+		{
+			bGet = false;
+			break;
+		}
+		devName = m_usbSeqMap[nSeq].devName;
+
+	} while(0);
+
+	pthread_mutex_unlock(&m_mutex);
+
+	return bGet;
+}
+
+void UsbHubMonitor::addUsbHubTunnel(int nSeq, const string &devName)
+{
+	UsbHubTunnelInfo tunnelInfo;
+	pthread_mutex_lock(&m_mutex);
+	tunnelInfo.devName = devName;
 	m_usbSeqMap[nSeq] = tunnelInfo;
 	pthread_mutex_unlock(&m_mutex);
 }
@@ -107,17 +153,18 @@ bool UsbHubMonitor::removeUsbHubTunnel(int nSeq)
 			bSuccess = false;
 			break;
 		}
+		UsbHubTunnelInfo &tunnelInfo = m_usbSeqMap.at(nSeq);
 
-		UsbHubTunnelInfo *tunnelInfo = m_usbSeqMap[nSeq];
-
-		if(tunnelInfo->ptty)
+		if(-1 != tunnelInfo.pid)
 		{
-			cleanTTY(tunnelInfo->ptty);
+			printf("\t[%d] kill pid[%d]\n", getpid(), tunnelInfo.pid);
+			kill(tunnelInfo.pid, 9);
+			waitpid(tunnelInfo.pid, NULL, 0);
 		}
 
-		delete tunnelInfo;
-
 		m_usbSeqMap.erase(nSeq);
+
+		printf("\t[%d] erase [%d]\n", getpid(), nSeq);
 
 	} while(0);
 	pthread_mutex_unlock(&m_mutex);
@@ -126,195 +173,7 @@ bool UsbHubMonitor::removeUsbHubTunnel(int nSeq)
 }
 
 
-bool UsbHubMonitor::updateUsbHubTunnelAttrubute(UsbHubTunnelInfo *tunnelInfo, int speed, int databits, int parity, int stopbits)
-{
-	// set speed
-	if(setTTYSpeed(tunnelInfo->ptty, speed)>0)
-	{
-		printf("setTTYSpeed() error\n");
-		return false;
-	}
-	if (setTTYParity(tunnelInfo->ptty, databits, parity, stopbits) > 0)
-	{
-		printf("setTTYParity() error\n");
-		return false;
-	}
-	return true;
-}
 
-int UsbHubMonitor::sendUsbHubTunnel(int nSeq, char *pbuf, int size, int speed, int databits, int parity, int stopbits)
-{
-	int nRet = 0;
-	pthread_mutex_lock(&m_mutex);
-	do{
-		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
-		{
-			nRet = -1;
-			break;
-		}
-		UsbHubTunnelInfo *tunnelInfo = m_usbSeqMap[nSeq];
-		if(NULL == tunnelInfo)
-		{
-			printf("usb-seq[%d] not exists\n", nSeq);
-			nRet = -2;
-			break;
-		}
-
-		// create bby fd
-		if(NULL == tunnelInfo->ptty)
-		{
-			tunnelInfo->ptty = readyTTY(tunnelInfo->devName.c_str());
-			if(tunnelInfo->ptty == NULL)
-			{
-				printf("readyTTY(%s) error\n", tunnelInfo->devName.c_str());
-				nRet = -3;
-				break;
-			}
-		}
-
-		if(!updateUsbHubTunnelAttrubute(tunnelInfo, speed, databits, parity, stopbits))
-		{
-			nRet = -4;
-			break;
-		}
-
-		nRet = sendnTTY(tunnelInfo->ptty, pbuf, size);
-
-	} while(0);
-	pthread_mutex_unlock(&m_mutex);
-	return nRet;
-
-}
-int UsbHubMonitor::sendUsbHubTunnel(int nSeq, char *pbuf, int size)
-{
-	int nRet = 0;
-	pthread_mutex_lock(&m_mutex);
-	do{
-		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
-		{
-			nRet = -1;
-			break;
-		}
-		UsbHubTunnelInfo *tunnelInfo = m_usbSeqMap[nSeq];
-		if(NULL == tunnelInfo)
-		{
-			printf("usb-seq[%d] not exists\n", nSeq);
-			nRet = -2;
-			break;
-		}
-
-		// create bby fd
-		if(NULL == tunnelInfo->ptty)
-		{
-			tunnelInfo->ptty = readyTTY(tunnelInfo->devName.c_str());
-			if(tunnelInfo->ptty == NULL)
-			{
-				printf("readyTTY(%s) error\n", tunnelInfo->devName.c_str());
-				nRet = -3;
-				break;
-			}
-		}
-
-		if(!updateUsbHubTunnelAttrubute(tunnelInfo, DEFAULT_SPEED, DEFAULT_DATABITS, DEFAULT_PARITY, DEFAULT_STOPBITs))
-		{
-			nRet = -4;
-			break;
-		}
-
-		nRet = sendnTTY(tunnelInfo->ptty, pbuf, size);
-
-	} while(0);
-	pthread_mutex_unlock(&m_mutex);
-	return nRet;
-}
-
-int UsbHubMonitor::recvUsbHubTunnel(int nSeq, char *pbuf, int size, int speed, int databits, int parity, int stopbits)
-{
-	int nRet = 0;
-	pthread_mutex_lock(&m_mutex);
-	do {
-
-		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
-		{
-			nRet = -1;
-			break;
-		}
-		UsbHubTunnelInfo *tunnelInfo = m_usbSeqMap[nSeq];
-		if(NULL == tunnelInfo)
-		{
-			printf("usb-seq[%d] not exists\n", nSeq);
-			nRet = -2;
-			break;
-		}
-
-		// create bby fd
-		if(NULL == tunnelInfo->ptty)
-		{
-			tunnelInfo->ptty = readyTTY(tunnelInfo->devName.c_str());
-			if(tunnelInfo->ptty == NULL)
-			{
-				printf("readyTTY(%s) error\n", tunnelInfo->devName.c_str());
-				nRet = -3;
-				break;
-			}
-		}
-
-		if(!updateUsbHubTunnelAttrubute(tunnelInfo, speed, databits, parity, stopbits))
-		{
-			nRet = -4;
-			break;
-		}
-
-		nRet = recvnTTY(tunnelInfo->ptty, pbuf, size);
-	} while(0);
-	pthread_mutex_unlock(&m_mutex);
-
-	return nRet;
-
-}
-int UsbHubMonitor::recvUsbHubTunnel(int nSeq, char *pbuf, int size)
-{
-	int nRet = 0;
-	pthread_mutex_lock(&m_mutex);
-	do {
-
-		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
-		{
-			nRet = -1;
-			break;
-		}
-		UsbHubTunnelInfo *tunnelInfo = m_usbSeqMap[nSeq];
-		if(NULL == tunnelInfo)
-		{
-			printf("usb-seq[%d] not exists\n", nSeq);
-			nRet = -2;
-			break;
-		}
-
-		// create bby fd
-		if(NULL == tunnelInfo->ptty)
-		{
-			tunnelInfo->ptty = readyTTY(tunnelInfo->devName.c_str());
-			if(tunnelInfo->ptty == NULL)
-			{
-				printf("readyTTY(%s) error\n", tunnelInfo->devName.c_str());
-				nRet = -3;
-				break;
-			}
-		}
-
-		if(!updateUsbHubTunnelAttrubute(tunnelInfo, DEFAULT_SPEED, DEFAULT_DATABITS, DEFAULT_PARITY, DEFAULT_STOPBITs))
-		{
-			nRet = -4;
-			break;
-		}
-
-		nRet = recvnTTY(tunnelInfo->ptty, pbuf, size);
-	} while(0);
-	pthread_mutex_unlock(&m_mutex);
-
-	return nRet;
-}
 
 void UsbHubMonitor::work(const string &strBuf, CHANGE_TYPE type)
 {
@@ -355,56 +214,22 @@ void UsbHubMonitor::work(const string &strBuf, CHANGE_TYPE type)
 	{
 		if(TYPE_ADD == type)
 		{
-			UsbHubTunnelInfo *tunnelInfo = new UsbHubTunnelInfo();
-			tunnelInfo->devName = devName;
-			addUsbHubTunnel(nSeq, tunnelInfo);
-			printf("# add: usb-no[%d] usb-name[%s]\n", nSeq, devName.c_str());
+			addUsbHubTunnel(nSeq, devName);
+			printf("\t[%d] add: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
 		}
 		else if(TYPE_REMOVE == type)
 		{
 			removeUsbHubTunnel(nSeq);
-			printf("# remove: usb-no[%d] usb-name[%s]\n", nSeq, devName.c_str());
+			printf("\t[%d] remove: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
 		}
 		else {
-			printf("# unknow type[%d]", type);
+			printf("\t[%d] unknow type[%d]", getpid(), type);
 		}
 	}
 	else
 	{
-		printf("# error usb-no[%s]", usbSeq.c_str());
+		printf("\t[%d] error usb-no[%s]", getpid(), usbSeq.c_str());
 	}
 }
 
 
-//! 函数功能：string to int
-//! nScale表示string是何进制
-int UsbHubMonitor::str2int( const string &str, int nScale)
-{
-	stringstream ss( str);
-	int num;
-	switch( nScale)
-	{
-		case 16:
-			if(( ss >> hex >> num). fail())
-			{
-				// ERROR
-			}
-			break;
-		case 10:
-			if(( ss >> dec >> num). fail())
-			{
-				//ERROR
-			}
-			break;
-		case 8:
-			if(( ss >> oct >> num). fail())
-			{
-				//ERROR
-			}
-			break;
-		default:
-			// ERROR
-			break;
-	}
-	return num;
-}
