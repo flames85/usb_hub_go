@@ -35,14 +35,14 @@ void * UsbHubMonitor::threadProc(void* self)
 		// 阻塞读取
 		recv(hotplug_sock, &buf, sizeof(buf), 0);
 #ifdef _DEBUG_
-		printf("\t[%d] debug:recv:%s\n", getpid(), buf);
+		printf("\n\t[%d] debug:recv:%s\n", getpid(), buf);
 #endif
 		string strBuf = buf;
 		// 解析出开头是add, remove, 末尾有tty
 		if(0 == strBuf.find("add@") && strBuf.find("tty/") != std::string::npos)
 		{
 #ifdef _DEBUG_
-			printf("\t[%d] debug:add:%s\n", getpid(), strBuf.c_str());
+			printf("\n\t[%d] debug:add:%s\n", getpid(), strBuf.c_str());
 #endif
 			strBuf = strBuf.substr(4);
 			_self->work(strBuf, TYPE_ADD);
@@ -50,7 +50,7 @@ void * UsbHubMonitor::threadProc(void* self)
 		else if(0 == strBuf.find("remove@") && strBuf.find("tty/") != std::string::npos)
 		{
 #ifdef _DEBUG_
-			printf("\t[%d] debug:remove:%s\n", getpid(), strBuf.c_str());
+			printf("\n\t[%d] debug:remove:%s\n", getpid(), strBuf.c_str());
 #endif
 			strBuf = strBuf.substr(7);
 			_self->work(strBuf, TYPE_REMOVE);
@@ -95,7 +95,7 @@ bool UsbHubMonitor::setUsbHubTunnelPid(int nSeq, __pid_t pid)
 	do{
 		if(m_usbSeqMap.find(nSeq) == m_usbSeqMap.end())
 		{
-			printf("\t[%d] usb-seq[%d] not exists\n", getpid(), nSeq);
+			printf("\n\t[%d] usb-seq[%d] not exists\n", getpid(), nSeq);
 			bSet = false;
 			break;
 		}
@@ -157,14 +157,14 @@ bool UsbHubMonitor::removeUsbHubTunnel(int nSeq)
 
 		if(-1 != tunnelInfo.pid)
 		{
-			printf("\t[%d] kill pid[%d]\n", getpid(), tunnelInfo.pid);
+			printf("\n\t[%d] kill pid[%d]\n", getpid(), tunnelInfo.pid);
 			kill(tunnelInfo.pid, 9);
 			waitpid(tunnelInfo.pid, NULL, 0);
 		}
 
 		m_usbSeqMap.erase(nSeq);
 
-		printf("\t[%d] erase [%d]\n", getpid(), nSeq);
+		printf("\n\t[%d] erase [%d]\n", getpid(), nSeq);
 
 	} while(0);
 	pthread_mutex_unlock(&m_mutex);
@@ -215,20 +215,20 @@ void UsbHubMonitor::work(const string &strBuf, CHANGE_TYPE type)
 		if(TYPE_ADD == type)
 		{
 			addUsbHubTunnel(nSeq, devName);
-			printf("\t[%d] add: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
+			printf("\n\t[%d] add: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
 		}
 		else if(TYPE_REMOVE == type)
 		{
 			removeUsbHubTunnel(nSeq);
-			printf("\t[%d] remove: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
+			printf("\n\t[%d] remove: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
 		}
 		else {
-			printf("\t[%d] unknow type[%d]", getpid(), type);
+			printf("\n\t[%d] unknow type[%d]", getpid(), type);
 		}
 	}
 	else
 	{
-		printf("\t[%d] error usb-no[%s]", getpid(), usbSeq.c_str());
+		printf("\n\t[%d] error usb-no[%s]", getpid(), usbSeq.c_str());
 	}
 }
 
