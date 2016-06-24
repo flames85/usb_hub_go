@@ -24,7 +24,7 @@ UsbHubStudy::~UsbHubStudy()
 void UsbHubStudy::go() {
 
     printf("# study mode\n");
-    printf("请将USB存储设备插拔同一个Hub的不同USB口, 然后退出.\nPS: 不得插拔不同的Hub, 如果你这样做了, 请退出后再试. 总之init模式下, 保证只有需要检测的Hub发生变化.\n\n");
+    printf("请将USB存储设备插拔同一个Hub的不同USB口, 然后退出.\n\n");
 
     // 读取消息数组
     char buf[UEVENT_BUFFER_SIZE * 2] = {0};
@@ -67,22 +67,39 @@ void UsbHubStudy::work(const string &strBuf)
     {
         m_strHubPrefix = new string(strBuf);
     }
+
+    bool bSet = false;
     for(size_t index = 0; index < m_strHubPrefix->size() && index < strBuf.size(); index ++)
     {
         if(m_strHubPrefix->at(index) != strBuf.at(index))
         {
             *m_strHubPrefix = m_strHubPrefix->substr(0, index);
+            bSet = true;
             break;
         }
     }
 
-    FILE *fp = NULL;
-    printf("# init dev hub prefix is[%s] so far\n", m_strHubPrefix->c_str());
-    if( (fp = fopen(DEV_HUB_PREFIX_CONF, "wb") ) == NULL )
+    if(bSet)
     {
-        printf("# open conf[%s] fail. 可能权限不足!\n", DEV_HUB_PREFIX_CONF);
-        return;
+        FILE *fp = NULL;
+#ifdef _DEBUG_
+        printf("# dev hub prefix is[%s] so far\n", m_strHubPrefix->c_str());
+#endif
+        if( (fp = fopen(DEV_HUB_PREFIX_CONF, "wb") ) == NULL )
+        {
+            printf("# open conf[%s] fail. 可能权限不足!\n", DEV_HUB_PREFIX_CONF);
+            return;
+        }
+        fwrite(m_strHubPrefix->c_str(), sizeof(char), m_strHubPrefix->size(), fp);
+        fclose(fp);
+        printf("# Study ok! Bye\n");
+        exit(0);
     }
-    fwrite(m_strHubPrefix->c_str(), sizeof(char), m_strHubPrefix->size(), fp);
-    fclose(fp);
+    else
+    {
+        printf("# Please try another USB slot\n");
+    }
+
+
+
 }

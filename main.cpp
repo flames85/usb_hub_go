@@ -43,9 +43,14 @@ int main(int argc,char **argv)
         cout << "please choose usb-seq> ";
         while (fgets(in, 100, stdin)) {
             nSeq = atoi(in);
+            if(nSeq <= 0)
+            {
+                cout << "please choose usb-seq> ";
+                continue;
+            }
             // seq if exists?
-            if (nSeq <= 0 || !monitor.getUsbHubTunnelName(nSeq, devName)) {
-                printf("\t[%d] usb-seq[%d] not exists\n", getpid(), nSeq);
+            if ( !monitor.getUsbHubTunnelName(nSeq, devName)) {
+                printf("\n\t[%d] usb-seq[%d] not exists\n\n", getpid(), nSeq);
                 cout << "please choose usb-seq> ";
                 continue;
             }
@@ -66,21 +71,15 @@ int main(int argc,char **argv)
                 UsbHubTest test;
                 test.go(devName);
 
-                printf("[*%d] going to test[%s]\n", getpid(), devName.c_str());
-
                 test.send("Hello", 5);
-
                 printf("[*%d] send test msg Hello\n", getpid());
 
                 char buff[12] = {0};
                 test.recv(buff, 5);
-
                 printf("[*%d] recv test msg[%s]\n", getpid(), buff);
 
                 sleep(100);
-
-                printf("[*%d]exit\n", getpid());
-
+                printf("[*%d] test finished\n", getpid());
             } while(0);
             exit(0);
         }

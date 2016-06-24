@@ -65,8 +65,8 @@ int UsbHubMonitor::go()
 	FILE *fp = NULL;
 	if( (fp = fopen(DEV_HUB_PREFIX_CONF, "rb") ) == NULL )
 	{
-		printf("# open conf[%s] fail, please run init mode first!\n", DEV_HUB_PREFIX_CONF);
-		printf("# usage.\n\tusb_hub_monitor init\n\n");
+		printf("# open conf[%s] fail, please run study mode first!\n", DEV_HUB_PREFIX_CONF);
+		printf("# usage.\n\tusb_hub_monitor study\n\n");
 		return -1;
 	}
 
@@ -74,7 +74,7 @@ int UsbHubMonitor::go()
 	memset(cHubPrefix, 0x0, sizeof(cHubPrefix));
 	if(fread(cHubPrefix, sizeof(char), DEV_HUB_PREFIX_SIZE, fp) <=0 )
 	{
-		printf("# read conf[%s] fail, please run init mode first!\n", DEV_HUB_PREFIX_CONF);
+		printf("# read conf[%s] fail, please run study mode first!\n", DEV_HUB_PREFIX_CONF);
 		return -2;
 	}
 	printf("# get dev hub prefix[%s]\n", cHubPrefix);

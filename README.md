@@ -1,5 +1,13 @@
 # usb_hub_go
 
-# Thank you!
+How to build?
 
-http://blog.chinaunix.net/uid-11582448-id-745506.html
+cmake
+
+
+How to run?
+
+1. ./usb_hub_go init
+
+
+2. ./usb_hub_go
