@@ -16,16 +16,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1f326d3e-f4fb-4e15-a54d-d1a5929ee89f" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common.cpp" afterPath="$PROJECT_DIR$/common.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common.h" afterPath="$PROJECT_DIR$/common.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/goStudy.py" afterPath="$PROJECT_DIR$/goStudy.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/goTest.py" afterPath="$PROJECT_DIR$/goTest.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib.cpp" afterPath="$PROJECT_DIR$/lib.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib.h" afterPath="$PROJECT_DIR$/lib.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/usb_hub_monitor.cpp" afterPath="$PROJECT_DIR$/usb_hub_monitor.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/usb_hub_monitor.h" afterPath="$PROJECT_DIR$/usb_hub_monitor.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/usb_hub_prefix.conf" afterPath="$PROJECT_DIR$/usb_hub_prefix.conf" />
     </list>
     <ignored path="serial_port.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -88,31 +79,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="string.h" pinned="false" current-in-tab="false">
-        <entry file="file:///usr/include/string.h">
+      <file leaf-file-name="usb_hub_study.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/usb_hub_study.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="45" column="13" selection-start-line="45" selection-start-column="13" selection-end-line="45" selection-end-column="13" />
+            <state relative-caret-position="285">
+              <caret line="47" column="6" selection-start-line="47" selection-start-column="6" selection-end-line="47" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="object.h" pinned="false" current-in-tab="false">
-        <entry file="file:///user/local/pythonDev/include/python2.7/object.h">
+      <file leaf-file-name="usb_hub_study.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/usb_hub_study.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="836">
-              <caret line="107" column="2" selection-start-line="107" selection-start-column="2" selection-end-line="107" selection-end-column="2" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="modsupport.h" pinned="false" current-in-tab="false">
-        <entry file="file:///user/local/pythonDev/include/python2.7/modsupport.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="31" column="43" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="43" />
+            <state relative-caret-position="240">
+              <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -121,8 +102,18 @@
       <file leaf-file-name="lib.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="246">
-              <caret line="24" column="70" selection-start-line="24" selection-start-column="38" selection-end-line="24" selection-end-column="70" />
+            <state relative-caret-position="126">
+              <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="methodobject.h" pinned="false" current-in-tab="false">
+        <entry file="file:///user/local/pythonDev/include/python2.7/methodobject.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="267">
+              <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -175,9 +166,9 @@
         <option value="$PROJECT_DIR$/common.cpp" />
         <option value="$PROJECT_DIR$/usb_hub_monitor.h" />
         <option value="$PROJECT_DIR$/lib.cpp" />
-        <option value="$PROJECT_DIR$/lib.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/usb_hub_monitor.cpp" />
+        <option value="$PROJECT_DIR$/lib.h" />
       </list>
     </option>
   </component>
@@ -513,18 +504,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/usb_hub_study.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
-          <folding>
-            <element signature="e#723#754#0" expanded="false" />
-            <element signature="e#946#987#0" expanded="false" />
-            <element signature="e#1851#1919#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/usb_hub_study.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -771,31 +750,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/usb_hub_study.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///user/local/pythonDev/include/python2.7/pyconfig.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="1178" column="0" selection-start-line="1178" selection-start-column="0" selection-end-line="1178" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/usb_hub_study.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
-          <folding>
-            <element signature="e#723#754#0" expanded="false" />
-            <element signature="e#946#987#0" expanded="false" />
-            <element signature="e#1851#1919#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -891,16 +850,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="57" column="27" selection-start-line="57" selection-start-column="27" selection-end-line="57" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -922,10 +871,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/usb_hub_study.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/usb_hub_study.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="47" column="6" selection-start-line="47" selection-start-column="6" selection-end-line="47" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///user/local/pythonDev/include/python2.7/methodobject.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="57" column="27" selection-start-line="57" selection-start-column="27" selection-end-line="57" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="246">
-          <caret line="24" column="70" selection-start-line="24" selection-start-column="38" selection-end-line="24" selection-end-column="70" />
+        <state relative-caret-position="126">
+          <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
           <folding />
         </state>
       </provider>

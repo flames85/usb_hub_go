@@ -19,7 +19,7 @@ extern "C" {
             { "goStudy", libUsbHubGo_goStudy, METH_VARARGS,
                     "Go study mode and blocked.\n\te.g. libUsbHubGo.goStudy()" },
             { "goMonitor", libUsbHubGo_goMonitor, METH_VARARGS,
-                    "Go monitor mode in child thread\n\te.g. libUsbHubGo.goMonitor()"},
+                    "Go monitor mode in child thread.\n\te.g. libUsbHubGo.goMonitor()"},
             { "getUsbDevName", libUsbHubGo_getUsbDevName, METH_VARARGS,
                     "return the usb-dev-name[Python Type:str] of usb-hub (like ttyUSBx) with port sequence.\n\te.g. libUsbHubGo.getUsbDevName(3)" },
             { "dumpUsbSeqMapForJson", libUsbHubGo_dumpUsbSeqMapForJson, METH_VARARGS,
