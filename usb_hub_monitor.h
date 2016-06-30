@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "stty.h"
 #include "common.h"
 
@@ -39,14 +40,12 @@ public:
     bool removeUsbHubTunnel(int nSeq);
     bool getUsbHubTunnelName(int nSeq, string &devName);
     bool setUsbHubTunnelPid(int nSeq, __pid_t pid);
+    bool getExistSeqArray(vector<int> &seqArray);
 
 private:
 
-
     void work(const string &strBuf, CHANGE_TYPE type);
     static void * threadProc(void* self);
-
-
 
 private:
     pthread_mutex_t                m_mutex;

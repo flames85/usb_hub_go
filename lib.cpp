@@ -25,37 +25,79 @@ int goMonitor()
         // monitor hub change
         if(0 != g_monitor->go())
         {
-            return -1; // fail
+            return -2; // fail
         }
     }
 }
 
-char* getDevName(int nSeq)
+int getDevName(int nSeq, char* pDevName, int maxLen)
 {
     if(NULL == g_monitor)
     {
         printf("error: monitor nil\n");
-        return NULL;
+        return -1;
     }
     string devName;
     if ( !g_monitor->getUsbHubTunnelName(nSeq, devName))
     {
-        return NULL;
+        return -2;
     }
-    strncpy(g_devNameBuf, devName.c_str(), sizeof(g_devNameBuf));
-    return g_devNameBuf;
+    strncpy(pDevName, devName.c_str(), maxLen);
+    return 1;
+}
+
+PyObject * getExistUsbSeqArray()
+{
+    PyObject *retval = NULL;
+    if(NULL == g_monitor)
+    {
+        printf("error: monitor nil\n");
+        return retval;
+    }
+
+    vector<int> seqArray;
+    if(!g_monitor->getExistSeqArray(seqArray))
+    {
+        return retval;
+    }
+
+    for(int index = 0; index < seqArray.size(); ++index)
+    {
+        if(NULL == retval)
+        {
+            retval = (PyObject*)Py_BuildValue("[i]", seqArray[index]);
+        }
+        PyModule_AddIntConstant(retval, "[i]", seqArray[index]);
+    }
+
+    return retval;
 }
 
 static PyObject* libUsbHubGo_getDevName(PyObject *self, PyObject *args)
 {
     int nSeq;
-    // args
-    if (!PyArg_ParseTuple(args, "i", &nSeq))
-        return NULL;
-    // run c function
-    char * devName = getDevName(nSeq);
-    // result
-    PyObject* retval = (PyObject*)Py_BuildValue("s", devName);
+    PyObject* retval = NULL;
+
+    do{
+        // args
+        if (!PyArg_ParseTuple(args, "i", &nSeq))
+        {
+            retval = (PyObject*)Py_BuildValue("s", "");
+            break;
+        }
+        // run c function
+        char pDevName[64] = {0};
+        if(getDevName(nSeq, pDevName, 64) < 0)
+        {
+            printf("not found!\n\n");
+            retval = (PyObject*)Py_BuildValue("s", "");
+            break;
+        }
+        // result
+        retval = (PyObject*)Py_BuildValue("s", pDevName);
+
+    } while(0);
+
     return retval;
 }
 
@@ -75,6 +117,16 @@ static PyObject* libUsbHubGo_goMonitor(PyObject *self, PyObject *args)
     return retval;
 }
 
+
+static PyObject* libUsbHubGo_getExistUsbSeqArray(PyObject *self, PyObject *args)
+{
+    PyObject* retval = getExistUsbSeqArray();
+    if(NULL == retval)
+    {
+        retval = (PyObject*)Py_BuildValue("i", 0);
+    }
+    return retval;
+}
 
 void initlibUsbHubGo()
 {

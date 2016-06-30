@@ -4,8 +4,6 @@
 #include <signal.h>
 #include <wait.h>
 #include "usb_hub_monitor.h"
-#include "common.h"
-
 
 UsbHubMonitor::UsbHubMonitor():
 		m_strHubPrefix(NULL), m_id(0)
@@ -23,6 +21,7 @@ UsbHubMonitor::~UsbHubMonitor()
 
 void * UsbHubMonitor::threadProc(void* self)
 {
+
 	UsbHubMonitor *_self = (UsbHubMonitor*)self;
 	// 读取消息数组
 	char buf[UEVENT_BUFFER_SIZE * 2] = {0};
@@ -56,11 +55,12 @@ void * UsbHubMonitor::threadProc(void* self)
 			_self->work(strBuf, TYPE_REMOVE);
 		}
 	}
+
 }
 
 int UsbHubMonitor::go()
 {
-	printf("# monitor mode\n");
+//	printf("# monitor mode\n");
 
 	FILE *fp = NULL;
 	if( (fp = fopen(DEV_HUB_PREFIX_CONF, "rb") ) == NULL )
@@ -77,7 +77,7 @@ int UsbHubMonitor::go()
 		printf("# read conf[%s] fail, please run study mode first!\n", DEV_HUB_PREFIX_CONF);
 		return -2;
 	}
-	printf("# get dev hub prefix[%s]\n", cHubPrefix);
+//	printf("# get dev hub prefix[%s]\n", cHubPrefix);
 
 	m_strHubPrefix = new string(cHubPrefix);
 
@@ -130,6 +130,19 @@ bool UsbHubMonitor::getUsbHubTunnelName(int nSeq, string &devName)
 	pthread_mutex_unlock(&m_mutex);
 
 	return bGet;
+}
+
+bool UsbHubMonitor::getExistSeqArray(vector<int> &seqArray)
+{
+	bool bExists = false;
+	map<int, UsbHubTunnelInfo>::const_iterator it = m_usbSeqMap.begin();
+	for(; it != m_usbSeqMap.end(); ++it)
+	{
+		const int nSeq = it->first;
+		seqArray.push_back(nSeq);
+		bExists = true;
+	}
+	return bExists;
 }
 
 void UsbHubMonitor::addUsbHubTunnel(int nSeq, const string &devName)
