@@ -30,7 +30,7 @@ int goMonitor()
     }
 }
 
-int getDevName(int nSeq, char* pDevName, int maxLen)
+int getUsbDevName(int nSeq, char* pDevName, int maxLen)
 {
     if(NULL == g_monitor)
     {
@@ -46,34 +46,27 @@ int getDevName(int nSeq, char* pDevName, int maxLen)
     return 1;
 }
 
-PyObject * getExistUsbSeqArray()
+int dumpUsbSeqMapForJson(char* pJson, int maxLen)
 {
-    PyObject *retval = NULL;
     if(NULL == g_monitor)
     {
         printf("error: monitor nil\n");
-        return retval;
+        return -1;
     }
 
-    vector<int> seqArray;
-    if(!g_monitor->getExistSeqArray(seqArray))
+    string json;
+    if(g_monitor->dumpUsbSeqMapForJson(json) <= 0)
     {
-        return retval;
+        return -2;
     }
 
-    for(int index = 0; index < seqArray.size(); ++index)
-    {
-        if(NULL == retval)
-        {
-            retval = (PyObject*)Py_BuildValue("[i]", seqArray[index]);
-        }
-        PyModule_AddIntConstant(retval, "[i]", seqArray[index]);
-    }
+    memset(pJson, 0x0, maxLen);
+    memcpy(pJson, json.c_str(), maxLen);
 
-    return retval;
+    return json.length();
 }
 
-static PyObject* libUsbHubGo_getDevName(PyObject *self, PyObject *args)
+static PyObject* libUsbHubGo_getUsbDevName(PyObject *self, PyObject *args)
 {
     int nSeq;
     PyObject* retval = NULL;
@@ -82,15 +75,14 @@ static PyObject* libUsbHubGo_getDevName(PyObject *self, PyObject *args)
         // args
         if (!PyArg_ParseTuple(args, "i", &nSeq))
         {
-            retval = (PyObject*)Py_BuildValue("s", "");
+            retval = (PyObject*)Py_BuildValue("s", ""); // empty string
             break;
         }
         // run c function
         char pDevName[64] = {0};
-        if(getDevName(nSeq, pDevName, 64) < 0)
+        if(getUsbDevName(nSeq, pDevName, 64) < 0)
         {
-            printf("not found!\n\n");
-            retval = (PyObject*)Py_BuildValue("s", "");
+            retval = (PyObject*)Py_BuildValue("s", ""); // empty string
             break;
         }
         // result
@@ -118,13 +110,15 @@ static PyObject* libUsbHubGo_goMonitor(PyObject *self, PyObject *args)
 }
 
 
-static PyObject* libUsbHubGo_getExistUsbSeqArray(PyObject *self, PyObject *args)
+static PyObject* libUsbHubGo_dumpUsbSeqMapForJson(PyObject *self, PyObject *args)
 {
-    PyObject* retval = getExistUsbSeqArray();
-    if(NULL == retval)
-    {
-        retval = (PyObject*)Py_BuildValue("i", 0);
-    }
+    PyObject* retval = NULL;
+    char pJson[1024] = {0};
+    int len = dumpUsbSeqMapForJson(pJson, 1024);
+    if(len > 0)
+        retval = (PyObject*)Py_BuildValue("z#", pJson, len); // for json
+    else
+        retval = (PyObject*)Py_BuildValue("s", ""); // empty string
     return retval;
 }
 

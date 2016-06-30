@@ -40,7 +40,7 @@ public:
     bool removeUsbHubTunnel(int nSeq);
     bool getUsbHubTunnelName(int nSeq, string &devName);
     bool setUsbHubTunnelPid(int nSeq, __pid_t pid);
-    bool getExistSeqArray(vector<int> &seqArray);
+    int dumpUsbSeqMapForJson(string &json);
 
 private:
 

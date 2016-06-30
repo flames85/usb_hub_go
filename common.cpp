@@ -1,3 +1,5 @@
+#include <sstream>
+#include <iomanip>
 #include "common.h"
 
 int str2int( const string &str, int nScale)
@@ -29,4 +31,26 @@ int str2int( const string &str, int nScale)
             break;
     }
     return num;
+}
+
+const string int2str(int num, int nScale, int nWidth)
+{
+    stringstream strStream;
+    switch(nScale)
+    {
+        case 16:
+            strStream << hex << setw (nWidth) << setfill('0') << num;
+            break;
+        case 10:
+            strStream << dec << setw (nWidth) << setfill('0') << num;
+            break;
+        case 8:
+            strStream << oct << setw (nWidth) << setfill('0') << num;
+            break;
+        default:
+            // ERROR
+            break;
+    }
+
+    return strStream.str();
 }

@@ -2,12 +2,17 @@
 
 How to build?
 
-cmake
+cmake .
+make
+
 
 
 How to run?
 
-1. ./usb_hub_go init
+// for study mode
 
+1. python goStudy.py
 
-2. ./usb_hub_go
+// for test mode
+
+2. python goTest.py

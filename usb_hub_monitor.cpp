@@ -132,17 +132,46 @@ bool UsbHubMonitor::getUsbHubTunnelName(int nSeq, string &devName)
 	return bGet;
 }
 
-bool UsbHubMonitor::getExistSeqArray(vector<int> &seqArray)
+int UsbHubMonitor::dumpUsbSeqMapForJson(string &json)
 {
-	bool bExists = false;
-	map<int, UsbHubTunnelInfo>::const_iterator it = m_usbSeqMap.begin();
-	for(; it != m_usbSeqMap.end(); ++it)
-	{
-		const int nSeq = it->first;
-		seqArray.push_back(nSeq);
-		bExists = true;
-	}
-	return bExists;
+	pthread_mutex_lock(&m_mutex);
+
+	int nCount = 0;
+
+	do {
+		if(m_usbSeqMap.empty())
+		{
+			break;
+		}
+
+		json.append("{");
+		map<int, UsbHubTunnelInfo>::const_iterator it = m_usbSeqMap.begin();
+		for(; it != m_usbSeqMap.end(); ++it)
+		{
+			const int nSeq = it->first;
+			const string &devName = it->second.devName;
+
+			if(nCount > 0)
+			{
+				json.append(",");
+			}
+
+			json.append("\"");
+			json.append(int2str(nSeq, 10));
+			json.append("\":\"");
+			json.append(devName);
+			json.append("\"");
+
+			++nCount;
+		}
+		json.append("}");
+
+	} while(0);
+
+
+	pthread_mutex_unlock(&m_mutex);
+
+	return nCount;
 }
 
 void UsbHubMonitor::addUsbHubTunnel(int nSeq, const string &devName)
@@ -177,7 +206,7 @@ bool UsbHubMonitor::removeUsbHubTunnel(int nSeq)
 
 		m_usbSeqMap.erase(nSeq);
 
-		printf("\n\t[%d] erase [%d]\n", getpid(), nSeq);
+//		printf("\n\t[%d] erase [%d]\n", getpid(), nSeq);
 
 	} while(0);
 	pthread_mutex_unlock(&m_mutex);
