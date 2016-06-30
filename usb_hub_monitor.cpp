@@ -60,7 +60,7 @@ void * UsbHubMonitor::threadProc(void* self)
 
 int UsbHubMonitor::go()
 {
-	printf("# test mode\n");
+	printf("# monitor mode\n");
 
 	FILE *fp = NULL;
 	if( (fp = fopen(DEV_HUB_PREFIX_CONF, "rb") ) == NULL )
@@ -215,15 +215,15 @@ void UsbHubMonitor::work(const string &strBuf, CHANGE_TYPE type)
 		if(TYPE_ADD == type)
 		{
 			addUsbHubTunnel(nSeq, devName);
-			printf("\n\t[%d] add: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
+//			printf("\n\t[%d] add: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
 		}
 		else if(TYPE_REMOVE == type)
 		{
 			removeUsbHubTunnel(nSeq);
-			printf("\n\t[%d] remove: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
+//			printf("\n\t[%d] remove: usb-no[%d] usb-name[%s]\n", getpid(), nSeq, devName.c_str());
 		}
 		else {
-			printf("\n\t[%d] unknow type[%d]", getpid(), type);
+//			printf("\n\t[%d] unknow type[%d]", getpid(), type);
 		}
 	}
 	else
