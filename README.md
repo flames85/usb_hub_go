@@ -1,8 +1,8 @@
-#### What is usb_hub_go?
+#### 1. What is usb_hub_go?
 Monitoring usb serial port connect or disconnect.
 
 
-#### How to build?
+#### 2. How to build?
 Install extra packages
 ```
 sudo apt-get install python-dev 
@@ -15,6 +15,14 @@ cmake .. -DPYTHON_INCLUDE_PATH=/usr/include/python2.7/
 make
 ```
 
-#### How to run?
-1. python goStudy.py [for study mode]
-2. python goTest.py [for test mode]
+#### 3. How to use?
+You must exec `goStudy.py` for the first time.
+```bash
+python goStudy.py
+```
+When you see `# Study ok! Bye`, you can run the `goMonitor.py` for __monitoring usb serial port__.
+
+```bash
+python goMonitor.py
+```
+

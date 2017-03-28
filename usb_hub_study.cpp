@@ -23,7 +23,7 @@ UsbHubStudy::~UsbHubStudy()
 
 void UsbHubStudy::go() {
 
-    printf("# study mode\n");
+    printf("\n# study mode\n\n");
     printf("请将USB存储设备插拔同一个Hub的不同USB口, 然后退出.\n\n");
 
     // 读取消息数组

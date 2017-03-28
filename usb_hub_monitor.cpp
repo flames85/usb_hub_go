@@ -60,7 +60,7 @@ void * UsbHubMonitor::threadProc(void* self)
 
 int UsbHubMonitor::go()
 {
-//	printf("# monitor mode\n");
+	printf("\n# monitor mode\n\n");
 
 	FILE *fp = NULL;
 	if( (fp = fopen(DEV_HUB_PREFIX_CONF, "rb") ) == NULL )

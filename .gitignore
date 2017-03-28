@@ -1,6 +1,9 @@
 # clion
 .idea
 
+# build dir
+build
+
 # Created by .ignore support plugin (hsz.mobi)
 ### C++ template
 # Prerequisites
