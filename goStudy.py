@@ -1,5 +1,6 @@
-#import sys
-#sys.path.append(r"./")
+import sys
+sys.path.append("./build")
+
 import libUsbHubGo
 
 libUsbHubGo.goStudy()

@@ -1,8 +1,6 @@
-#import sys
-#sys.path.append(r"./")
-
+import sys
+sys.path.append("./build")
 import libUsbHubGo
-#import time
 
 def convertSeq2Int(seq):
 	try:
