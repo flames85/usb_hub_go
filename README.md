@@ -8,7 +8,13 @@ Install extra packages
 sudo apt-get install python-dev 
 ```
 
-Build c++ shared lib for python module
+Build c++ shared lib for python module.
+```bash
+mkdir build && cd build
+cmake ..
+make
+```
+Maybe you should specify the python header file path which is `PYTHON_INCLUDE_PATH`.
 ```bash
 mkdir build && cd build
 cmake .. -DPYTHON_INCLUDE_PATH=/usr/include/python2.7/
