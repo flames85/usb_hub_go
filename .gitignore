@@ -1,3 +1,6 @@
+# clion
+.idea
+
 # Created by .ignore support plugin (hsz.mobi)
 ### C++ template
 # Prerequisites
@@ -84,4 +87,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-

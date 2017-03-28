@@ -1,13 +1,14 @@
-#### what is usb_hub_go?
+#### What is usb_hub_go?
 Monitoring usb serial port connect or disconnect.
 
 
 #### How to build?
-extra packages
+Install extra packages
 ```
 sudo apt-get install python-dev 
 ```
 
+Build c++ shared lib for python module
 ```bash
 mkdir build && cd build
 cmake .. -DPYTHON_INCLUDE_PATH=/usr/include/python2.7/
