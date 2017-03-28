@@ -25,4 +25,5 @@ When you see `# Study ok! Bye`, you can run the `goMonitor.py` for __monitoring 
 ```bash
 python goMonitor.py
 ```
+And enter `help` for help :D
 
